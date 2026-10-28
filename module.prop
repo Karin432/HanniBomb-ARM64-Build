@@ -1,0 +1,6 @@
+id=hannibomb
+name=HanniBomb
+version=1.5.0
+versionCode=150
+author=Hannhanniii
+description=Hybrid runtime groundwork, Rust telemetry daemon source, improved lifecycle diagnostics, game profiles and lighter WebUI.

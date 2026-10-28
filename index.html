@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#120d19">
+<title>HanniBomb — Control Center</title>
+<style>
+:root{color-scheme:dark;--bg:#09090d;--panel:rgba(255,255,255,.055);--panel2:rgba(255,255,255,.085);--line:rgba(255,255,255,.12);--accent:#a78bfa;--accent2:#d8b4fe;--text:#f7f4ff;--muted:#aaa4b8;--ok:#4ade80;--warn:#fbbf24;--bad:#fb7185;--glass-blur:blur(24px);--shadow:0 16px 48px rgba(0,0,0,.34);--safe-bottom:env(safe-area-inset-bottom,12px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth;scroll-padding-top:18px}body{margin:0;min-height:100vh;padding-bottom:calc(104px + var(--safe-bottom));overflow-x:hidden;background:radial-gradient(ellipse at 50% -18%,rgba(124,58,237,.25),transparent 48%),radial-gradient(ellipse at 100% 15%,rgba(91,33,182,.13),transparent 35%),var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,Roboto,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.07);color:var(--text);padding:10px 13px;font-weight:650;transition:background .18s ease,border-color .18s ease,transform .18s ease;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}button:hover{border-color:rgba(216,180,254,.55);background:rgba(255,255,255,.11)}button:active{transform:scale(.985)}button:disabled{opacity:.45;cursor:not-allowed}input,select{width:100%;min-width:0;background:rgba(5,5,10,.52);border:1px solid rgba(255,255,255,.13);border-radius:12px;color:var(--text);padding:11px 12px;outline:none}input:focus,select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(167,139,250,.15)}input[type=checkbox]{appearance:none;-webkit-appearance:none;width:48px;height:28px;flex:0 0 48px;border-radius:99px;padding:0;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.15);position:relative;cursor:pointer;transition:background .2s ease,border-color .2s ease}input[type=checkbox]::before{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#f7f5ff;box-shadow:0 2px 7px #0005;transition:transform .2s cubic-bezier(.2,.8,.2,1)}input[type=checkbox]:checked{background:linear-gradient(120deg,#8b5cf6,#c084fc);border-color:rgba(216,180,254,.7)}input[type=checkbox]:checked::before{transform:translateX(20px)}input[type=checkbox]:focus-visible,button:focus-visible{outline:2px solid var(--accent2);outline-offset:3px}input[type=range]{padding:0;accent-color:var(--accent2)}label{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}.wrap{width:min(1050px,100%);margin:auto;padding:16px 14px 36px}.hero{background:linear-gradient(145deg,rgba(124,58,237,.18),rgba(255,255,255,.045) 55%,rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.14);border-top-color:rgba(255,255,255,.26);border-radius:30px;padding:23px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden;backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}.hero:before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);pointer-events:none}.hero:after{content:"HB";position:absolute;right:16px;top:-44px;font-size:clamp(100px,22vw,150px);font-weight:900;letter-spacing:-.12em;color:rgba(216,180,254,.055);pointer-events:none}.brand{font-weight:850;letter-spacing:.12em;text-transform:uppercase;font-size:10px;color:#d8b4fe}h1{margin:8px 0 7px;line-height:1.05;font-size:clamp(30px,6vw,42px);letter-spacing:-.055em;background:linear-gradient(135deg,#fff 15%,#e9d5ff 68%,#c4b5fd);-webkit-background-clip:text;background-clip:text;color:transparent}h2{font-size:17px;letter-spacing:-.025em;margin:0 0 6px}h3{font-size:14px;margin:15px 0 6px}.sub{color:#c2bbcf;margin:0;max-width:760px;font-size:13px}.meta{margin-top:15px;display:flex;gap:7px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.13);border-radius:99px;padding:6px 10px;font-size:11px;color:#e9ddfa;background:rgba(255,255,255,.055);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.dot{width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block;box-shadow:0 0 10px currentColor}.dot.ok{background:var(--ok)}.dot.bad{background:var(--bad)}.section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:26px 2px 11px;scroll-margin-top:16px}.section-head p{margin:0;color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.card{grid-column:span 6;border:1px solid rgba(255,255,255,.105);border-top-color:rgba(255,255,255,.19);border-radius:23px;background:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,.035));padding:17px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.18);position:relative;overflow:hidden;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.card:before{content:"";position:absolute;left:14%;right:14%;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);pointer-events:none}.card.wide{grid-column:span 12}.card.third{grid-column:span 4}.card p,.hint{color:var(--muted);margin:5px 0 10px;font-size:12px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.row .fixed{flex:0 0 auto}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.buttons button{flex:1 1 125px}.primary{background:linear-gradient(125deg,rgba(139,92,246,.92),rgba(192,132,252,.82));border-color:rgba(233,213,255,.32);color:white;box-shadow:0 5px 18px rgba(139,92,246,.15)}.secondary{background:rgba(255,255,255,.055)}.danger{border-color:rgba(251,113,133,.3);background:rgba(190,24,93,.14);color:#fecdd3}.selected{border-color:rgba(216,180,254,.72);background:rgba(139,92,246,.23);box-shadow:inset 0 0 0 1px rgba(216,180,254,.12)}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:17px}.metric{padding:12px 10px;background:rgba(5,5,10,.28);border:1px solid rgba(255,255,255,.09);border-radius:16px;min-width:0;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.metric strong{display:block;font-size:19px;letter-spacing:-.045em;overflow-wrap:anywhere}.metric small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.notice{padding:12px 13px;border-left:3px solid var(--warn);border-radius:13px;background:rgba(120,80,20,.16);color:#fde7bd;font-size:12px;margin-top:13px}.notice.ok{border-color:var(--ok);background:rgba(22,101,52,.18);color:#d1fae5}.notice.bad{border-color:var(--bad);background:rgba(159,18,57,.18);color:#ffe4e6}.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 10px;font-size:12px;margin-top:12px}.kv span:nth-child(odd){color:var(--muted)}.kv span:nth-child(even){overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,monospace}.mono{font:12px/1.55 ui-monospace,SFMono-Regular,monospace;color:#e9d5ff;white-space:pre-wrap;overflow-wrap:anywhere;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.1);border-radius:15px;padding:13px;max-height:380px;overflow:auto;margin:10px 0 0}.divider{height:1px;background:rgba(255,255,255,.1);margin:15px 0}.switchline{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055)}.switchline:last-of-type{border-bottom:0}.switchline strong{display:block;font-size:13px}.switchline small{display:block;color:var(--muted);font-size:11px}.switchline input{margin:0}.range-line{display:flex;gap:12px;align-items:center}.range-line input{padding:0;accent-color:var(--accent2)}.range-value{min-width:48px;text-align:right;font-weight:800;color:#d8b4fe}.foot{color:#8f809c;font-size:11px;margin:23px 3px 0}.busy{opacity:.72;pointer-events:none}.toastarea{position:fixed;bottom:calc(94px + var(--safe-bottom));left:12px;right:12px;z-index:1100;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}.toast{max-width:600px;width:fit-content;background:rgba(36,28,52,.94);border:1px solid rgba(216,180,254,.32);box-shadow:var(--shadow);border-radius:16px;padding:11px 15px;color:white;font-size:13px;animation:up .2s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}@keyframes up{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.glass-dock{position:fixed;bottom:calc(12px + var(--safe-bottom));left:12px;right:12px;margin:auto;width:min(620px,calc(100% - 24px));min-height:66px;padding:6px 7px;display:flex;align-items:center;justify-content:space-around;gap:4px;z-index:1000;border:1px solid rgba(255,255,255,.16);border-top-color:rgba(255,255,255,.28);border-radius:25px;background:rgba(22,18,31,.78);box-shadow:0 14px 42px rgba(0,0,0,.42);backdrop-filter:blur(30px) saturate(150%);-webkit-backdrop-filter:blur(30px) saturate(150%)}.dock-item{display:flex;flex:1;min-width:0;min-height:52px;align-items:center;justify-content:center;flex-direction:column;gap:3px;border:1px solid transparent;background:transparent;color:#aaa4b8;padding:5px 3px;border-radius:17px;font-size:10px;font-weight:600}.dock-item svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.dock-item.active{color:#f5eaff;background:rgba(167,139,250,.16);border-color:rgba(216,180,254,.12)}.dock-item.active svg{color:#d8b4fe;filter:drop-shadow(0 0 7px rgba(167,139,250,.4))}.dock-item:active{transform:scale(.97)}@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.hero,.card,.pill,.glass-dock,.toast{background:rgba(25,20,36,.97)}}
+@media(max-width:740px){.card,.card.third{grid-column:span 12}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding:21px 16px;border-radius:25px}.wrap{padding:11px 11px 30px}.section-head{margin-top:22px}.kv{grid-template-columns:100px minmax(0,1fr)}.glass-dock{left:9px;right:9px;width:auto;bottom:calc(9px + var(--safe-bottom))}.dock-item{font-size:9px}.toastarea{bottom:calc(86px + var(--safe-bottom))}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Gemini reference layout: fixed header + horizontally swiped full-width pages */
+:root{--hb-header-h:76px;--hb-dock-h:78px}
+html{height:100%;overflow:hidden;scroll-behavior:auto}
+body{height:100dvh;min-height:0;overflow:hidden;padding:0;overscroll-behavior:none}
+.hb-header{height:var(--hb-header-h);padding:14px 18px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hb-brand{display:flex;align-items:center;gap:11px;min-width:0}
+.hb-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:center 28%;border:1.5px solid rgba(255,255,255,.32);box-shadow:0 4px 16px rgba(138,43,226,.34);flex:0 0 auto}
+.hb-brand-name{font-size:20px;font-weight:750;letter-spacing:-.5px;background:linear-gradient(135deg,#fff,#d1b3ff);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.hb-brand-sub{font-size:10px;color:#d1b3ff;margin-top:4px;letter-spacing:.05em}
+.hb-pages{height:calc(100dvh - var(--hb-header-h) - var(--hb-dock-h) - env(safe-area-inset-bottom,0px));display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hb-pages::-webkit-scrollbar{display:none}
+.hb-page{flex:0 0 100vw;width:100vw;height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;scroll-snap-align:start;scroll-snap-stop:always;padding:0 0 20px;scrollbar-width:none}
+.hb-page::-webkit-scrollbar{display:none}
+.hb-page .wrap{width:100%;max-width:1050px;margin:0 auto;padding:8px 14px 24px}
+.hb-page .hero{padding:18px 16px;border-radius:24px;background:linear-gradient(180deg,rgba(10,10,12,.12),rgba(10,10,12,.86)),url('mascot.jpg') center 32%/cover no-repeat,radial-gradient(ellipse at top right,rgba(138,43,226,.32),#17121f);min-height:230px;display:flex;flex-direction:column;justify-content:flex-end}
+.hb-page .hero:after{content:none}
+.hb-page .hero .brand{color:#eadbff;text-shadow:0 1px 8px #000}
+.hb-page .hero h1{font-size:clamp(28px,7vw,38px);text-shadow:0 2px 12px #0006}
+.hb-page .hero .sub{color:#f1eafa;text-shadow:0 1px 8px #000}
+.hb-page .metrics{margin-top:13px}
+.hb-page .section-head{margin-top:17px}
+.hb-dock{height:var(--hb-dock-h);bottom:calc(8px + env(safe-area-inset-bottom,0px));}
+.hb-dock .dock-item{font-size:10px}
+.hb-page .foot{padding-bottom:8px}
+@media(max-width:420px){.hb-header{padding-left:14px;padding-right:14px}.hb-brand-name{font-size:18px}.hb-avatar{width:42px;height:42px}.hb-page .wrap{padding-left:11px;padding-right:11px}.hb-page .hero{min-height:220px}}
+@media(prefers-reduced-motion:reduce){.hb-pages{scroll-behavior:auto}}
+
+
+/* v1.4.4 performance pass: avoid repeated backdrop-filter compositing in the Android WebView. */
+.hb-pages{scroll-behavior:auto!important;overscroll-behavior-x:contain}
+.card,.hero,.metric,button,.dock-item,.glass-dock,.toast,.notice{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+button{transition:background-color .08s linear,border-color .08s linear!important}
+input[type=checkbox],input[type=checkbox]::before{transition:background-color .08s linear,border-color .08s linear,transform .08s linear!important}
+.card{background:rgba(21,17,31,.96)!important;box-shadow:0 4px 12px rgba(0,0,0,.13)!important}
+.hero{background:linear-gradient(145deg,rgba(90,47,150,.30),rgba(25,22,33,.98))!important;box-shadow:0 5px 18px rgba(0,0,0,.18)!important}
+.metric{background:rgba(11,10,17,.9)!important}
+button:active{transform:none!important}
+#appPicker[hidden]{display:none!important}
+.app-picker-list{display:grid;grid-template-columns:1fr;gap:7px;max-height:48vh;overflow:auto;overscroll-behavior:contain;margin-top:12px}
+.app-choice{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.035);min-width:0}
+.app-choice input{width:20px;height:20px;flex:0 0 20px;margin:0;accent-color:var(--accent2)}
+.app-choice .app-title{font-weight:650;overflow-wrap:anywhere;min-width:0}
+.app-choice small{display:block;color:var(--muted);font-weight:400;overflow-wrap:anywhere}
+.app-choice .app-tick{margin-left:auto;color:var(--accent2);font-size:11px}
+.details-box{border-top:1px solid var(--line);margin-top:16px;padding-top:12px}
+.details-box summary{cursor:pointer;color:var(--accent2);font-weight:700;padding:8px 0}
+@media(min-width:600px){.app-picker-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+</style>
+</head>
+<body>
+<header class="hb-header">
+  <div class="hb-brand"><img class="hb-avatar" src="mascot.jpg" alt="Maskot HanniBomb"><div><div class="hb-brand-name">HanniBomb</div><div class="hb-brand-sub">CONTROL CENTER · v1.5.0</div></div></div>
+  <span class="pill"><i class="dot" id="headerBridgeDot"></i><span id="headerBridgeLabel">WebUI</span></span>
+</header>
+<div class="hb-pages" id="hbPages" aria-label="Panel HanniBomb">
+<section class="hb-page" data-page="home"><main class="wrap" id="app">
+  <section class="hero">
+    <div class="brand">HanniBomb · Control Center</div>
+    <h1>HanniBomb</h1>
+    <p class="sub">Panel kontrol yang terhubung ke modul. Setiap aksi melewati pemeriksaan dukungan, mencatat hasil, dan menghindari klaim sukses jika perangkat menolak perubahan.</p>
+    <div class="meta"><span class="pill"><i class="dot" id="bridgeDot"></i><span id="bridgeLabel">Memeriksa KernelSU WebUI…</span></span><span class="pill" id="versionPill">v1.5.0</span><span class="pill" id="devicePill">Perangkat: membaca…</span><span class="pill" id="runtimePill">Runtime: memeriksa…</span></div>
+    <div class="metrics">
+      <div class="metric"><strong id="profileValue">—</strong><small>Profil terpilih</small></div>
+      <div class="metric"><strong id="batteryValue">—</strong><small>Baterai</small></div>
+      <div class="metric"><strong id="tempValue">—</strong><small>Suhu baterai</small></div>
+      <div class="metric"><strong id="memoryValue">—</strong><small>RAM tersedia</small></div>
+    </div>
+    <div class="notice" id="safetyNotice">Mode dan profil belum dibaca. Kontrol CPU, DSCP, dan tc tetap opsional.</div>
+  </section>
+
+  <div class="section-head" id="nav-profile"><div><h2>Profil sistem</h2><p>Pilih profil manual atau aktifkan aturan hybrid.</p></div><button class="secondary fixed" id="refreshBtn">↻ Refresh</button></div>
+  <section class="grid">
+    <div class="card wide">
+      <h2>◈ Mode performa</h2><p>Memilih profil tidak otomatis mengubah frekuensi CPU/GPU. Kontrol governor secara terpisah OFF sebagai standar dan hanya menulis governor yang tersedia pada kernel.</p>
+      <div class="buttons"><button data-profile="balanced">Balance</button><button data-profile="performance">Performance</button><button data-profile="battery">Battery Saver</button><button class="primary" id="hybridBtn">Hybrid Otomatis</button></div>
+      <div class="kv"><span>Mode</span><span id="modeValue">—</span><span>Alasan AI lokal</span><span id="reasonValue">—</span><span>Thermal status</span><span id="thermalValue">—</span><span>Kernel</span><span id="kernelValue">—</span></div>
+      <div class="divider"></div>
+      <div class="switchline"><div><strong>Kontrol CPU governor</strong><small>Perubahan hanya bila governor cocok dan node dapat ditulis.</small></div><input type="checkbox" id="governorToggle" aria-label="Kontrol CPU governor"></div>
+      <div class="switchline"><div><strong>AI adaptif</strong><small>Dalam Hybrid, memilih Battery saat saver aktif, baterai rendah, atau thermal tinggi.</small></div><input type="checkbox" id="adaptiveToggle" aria-label="AI adaptif"></div>
+      <div class="switchline"><div><strong>Notifikasi Android</strong><small>Mencoba mem-post notifikasi sistem saat state berubah; WebUI toast tetap terpisah.</small></div><input type="checkbox" id="notificationToggle" aria-label="Notifikasi Android"></div>
+      <div class="buttons"><button id="testNotificationBtn">Uji notifikasi Android</button></div>
+    </div>
+    <div class="card">
+      <h2>▧ Status perangkat</h2><p>Snapshot read-only dari Android. Sensor yang tidak tersedia ditandai unknown.</p>
+      <div class="kv"><span>Model</span><span id="modelValue">—</span><span>Android / API</span><span id="androidValue">—</span><span>Board</span><span id="boardValue">—</span><span>Battery Saver</span><span id="saverValue">—</span><span>Storage free</span><span id="storageValue">—</span><span>Watcher</span><span id="watcherValue">—</span></div>
+      <div class="buttons"><button id="reportBtn">Laporan diagnostik</button><button id="logBtn">Log terbaru</button></div>
+    </div>
+
+  </section>
+
+</main></section>
+<section class="hb-page" data-page="gaming"><main class="wrap">
+  <div class="section-head" id="nav-gaming"><div><h2>Smart Game Mode</h2><p>Deteksi foreground berdasarkan package yang kamu daftarkan.</p></div></div>
+  <section class="grid"><div class="card wide">
+    <h2>🎮 Deteksi game otomatis</h2><p>Tekan <b>Tambahkan game</b>, lalu centang aplikasi yang terpasang. Package ID disimpan otomatis; kamu tidak perlu mengetik ID sendiri. Jika nama aplikasi tidak dapat dibaca oleh shell Android, daftar menggunakan package ID sebagai label. Pemeriksaan berjalan sekitar setiap 60 detik dan tetap menghormati batas baterai/suhu.</p>
+    <div class="buttons"><button id="addGamesBtn" class="primary">＋ Tambahkan game</button><button id="reloadGamesBtn">Muat ulang daftar</button><button id="saveGamesBtn">Simpan pilihan</button></div>
+    <div id="appPicker" class="details-box" hidden>
+      <label for="appSearch">Cari aplikasi</label><input id="appSearch" placeholder="Cari nama atau package…" autocomplete="off" spellcheck="false">
+      <div class="switchline"><div><strong>Tampilkan aplikasi sistem</strong><small>Daftar ini bisa sangat panjang. Pilih game/aplikasi yang memang ingin dipantau.</small></div><input type="checkbox" id="showSystemApps" aria-label="Tampilkan aplikasi sistem"></div>
+      <div id="appListStatus" class="hint">Memuat aplikasi terpasang…</div><div id="appChoices" class="app-picker-list"></div>
+      <div class="buttons"><button id="selectVisibleAppsBtn">Pilih hasil yang terlihat</button><button id="clearAppSelectionBtn">Kosongkan pilihan</button><button class="primary" id="commitAppsBtn">Simpan pilihan game</button></div>
+    </div>
+    <div class="buttons"><button id="gameAutoBtn" class="primary">Aktifkan deteksi otomatis</button><button id="gameStopBtn" class="danger">Matikan deteksi</button></div>
+    <div class="kv"><span>Deteksi</span><span id="gameAutoValue">—</span><span>Override berjalan</span><span id="gameRunningValue">—</span><span>Game terpilih</span><span id="gamePackagesValue">—</span></div>
+  </div></section>
+
+</main></section>
+<section class="hb-page" data-page="network"><main class="wrap">
+  <div class="section-head" id="nav-network"><div><h2>Network Engine</h2><p>Fitur jaringan lanjutan terpisah dari DNS, dengan opsi pemulihan.</p></div></div>
+  <section class="grid">
+    <div class="card wide">
+      <h2>⌁ Preset TCP</h2><p>Preset ini mengubah TCP sysctl yang di-allowlist dan didukung kernel. Klik preset merupakan opt-in eksplisit. Preset tidak mengubah DNS, firewall, APN atau radio.</p>
+      <div class="buttons"><button data-network="game">Game</button><button data-network="streaming">Streaming</button><button data-network="download">Download</button><button data-network="browsing">Browsing</button><button data-network="outdoor">Outdoor</button><button class="danger" id="networkRestoreBtn">Pulihkan TCP</button></div>
+      <div class="row"><div><label for="tcpCc">Algoritma TCP (harus tersedia di kernel)</label><input id="tcpCc" value="auto" placeholder="auto / nama kernel"></div><div><label for="tcpBuffer">Socket buffer bytes (262144–16777216)</label><input id="tcpBuffer" type="number" min="262144" max="16777216" step="65536" value="4194304"></div></div>
+      <button id="applyCustomTcpBtn" style="width:100%;margin-top:10px">Terapkan preset Custom</button>
+      <div class="kv"><span>TCP enabled</span><span id="networkEnabledValue">—</span><span>Algoritma tersedia</span><span id="tcpAvailableValue">—</span><span>Algoritma aktif</span><span id="tcpCurrentValue">—</span></div>
+    </div>
+    <div class="card">
+      <h2>◉ Private DNS</h2><p>Pemilih provider DNS bergaya PingPimp, ditambah hostname kustom. Android Private DNS diterapkan secara global; opsi Wi-Fi/mobile terpisah per jaringan tidak diasumsikan tersedia pada ROM ini.</p>
+      <label for="dnsProvider">Pilih penyedia DNS</label><select id="dnsProvider"><option value="one.one.one.one">Cloudflare — Standard</option><option value="security.cloudflare-dns.com">Cloudflare — Security filter</option><option value="family.cloudflare-dns.com">Cloudflare — Family filter</option><option value="dns.google">Google Public DNS</option><option value="dns.quad9.net">Quad9 — Security filter</option><option value="dns10.quad9.net">Quad9 — Unfiltered</option><option value="dns.adguard-dns.com">AdGuard — Ads/tracker filter</option><option value="family.adguard-dns.com">AdGuard — Family filter</option><option value="dns.mullvad.net">Mullvad — Standard</option><option value="adblock.dns.mullvad.net">Mullvad — Ads/tracker filter</option><option value="security-filter-dns.cleanbrowsing.org">CleanBrowsing — Security filter</option><option value="family-filter-dns.cleanbrowsing.org">CleanBrowsing — Family filter</option><option value="dns.alidns.com">AliDNS</option><option value="zero.dns0.eu">DNS0 — Standard</option><option value="family.dns0.eu">DNS0 — Family</option><option value="kids.dns0.eu">DNS0 — Kids</option><option value="p0.freedns.controld.com">Control D — Unfiltered</option><option value="p1.freedns.controld.com">Control D — Malware filter</option><option value="p2.freedns.controld.com">Control D — Ads/tracker filter</option><option value="p3.freedns.controld.com">Control D — Family filter</option><option value="dot.libredns.gr">LibreDNS</option><option value="custom">Hostname kustom…</option></select>
+      <label for="dnsHost">Hostname DNS-over-TLS</label><input id="dnsHost" placeholder="dns.example.net" autocomplete="off" spellcheck="false">
+      <div class="buttons"><button id="dnsProviderBtn" class="primary">Terapkan provider</button><button id="dnsHostBtn">Pakai hostname kustom</button><button id="dnsAutoBtn">Automatic</button><button id="dnsOffBtn">Off</button><button id="dnsRestoreBtn" class="danger">Restore DNS</button></div>
+      <div class="kv"><span>Mode</span><span id="dnsModeValue">—</span><span>Hostname aktif</span><span id="dnsHostValue">—</span></div>
+      <div class="hint">Jika internet gagal setelah ganti provider, tekan Automatic atau Restore DNS. Provider hanya mengubah Android Private DNS; ini bukan jaminan ping turun.</div>
+    </div>
+    <div class="card">
+      <h2>↗ DSCP marking</h2><p>Menandai paket outbound pada port yang dipilih. Jaringan/operator dapat mengabaikan DSCP; ini bukan jaminan ping lebih rendah. Default OFF.</p>
+      <div class="row"><div><label for="dscpPort">Port tujuan</label><input type="number" id="dscpPort" min="1" max="65535" value="27015"></div><div><label for="dscpValue">DSCP (0–63)</label><input type="number" id="dscpValue" min="0" max="63" value="46"></div></div>
+      <label for="dscpProtocol">Protocol</label><select id="dscpProtocol"><option value="udp">UDP</option><option value="tcp">TCP</option><option value="both">TCP + UDP</option></select>
+      <div class="buttons"><button class="primary" id="applyDscpBtn">Aktifkan DSCP</button><button class="danger" id="restoreDscpBtn">Hapus DSCP</button></div>
+      <div class="kv"><span>Status runtime</span><span id="dscpStatusValue">—</span></div>
+      <div class="hint">Menggunakan chain milik HanniBomb sendiri. Jika target iptables tidak tersedia, fitur menolak aktivasi.</div>
+    </div>
+    <div class="card">
+      <h2>⌁ Traffic shaping (tc)</h2><p>Opsional dan dibatasi: hanya mengganti root <code>noqueue</code> agar qdisc vendor yang parameternya tak diketahui tidak tertimpa. Pemulihan hanya dicoba bila TBF HanniBomb masih terlihat.</p>
+      <label for="tcInterface">Interface jaringan</label><input id="tcInterface" placeholder="wlan0 / rmnet_data0" autocomplete="off" spellcheck="false">
+      <label for="tcRate">Batas egress (2–100 Mbit/s)</label><input id="tcRate" type="number" min="2" max="100" value="10">
+      <div class="buttons"><button class="primary" id="applyTcBtn">Aktifkan tc shaping</button><button class="danger" id="restoreTcBtn">Pulihkan tc</button></div>
+      <div class="kv"><span>Default interface</span><span id="ifaceValue">—</span><span>Root qdisc</span><span id="qdiscValue">—</span><span>Konfigurasi</span><span id="tcEnabledValue">—</span><span>Status runtime</span><span id="tcRuntimeValue">—</span></div>
+    </div>
+    <div class="card">
+      <h2>⌁ Latency test</h2><p>Empat paket ICMP diagnostik. Beberapa server atau jaringan seluler bisa memblokir ICMP.</p>
+      <label for="pingTarget">Host atau IP</label><input id="pingTarget" value="1.1.1.1" spellcheck="false">
+      <button class="primary" id="pingBtn" style="width:100%;margin-top:10px">Jalankan ping</button>
+    </div>
+    <div class="card">
+      <h2>⌁ Wi-Fi scan throttle</h2><p>Membatasi pemindaian Wi-Fi latar belakang Android. Bisa memengaruhi pencarian lokasi atau discovery perangkat.</p>
+      <div class="buttons"><button id="wifiEnableBtn">Aktifkan</button><button class="danger" id="wifiRestoreBtn">Pulihkan / matikan</button></div>
+      <div class="kv"><span>Status Android</span><span id="wifiEnabledValue">—</span></div>
+    </div>
+  </section>
+
+</main></section>
+<section class="hb-page" data-page="system"><main class="wrap">
+  <div class="section-head" id="nav-diagnostics"><div><h2>Output & activity</h2><p>Hasil perintah root terakhir, termasuk kegagalan dari ROM/kernel.</p></div><button class="secondary fixed" id="clearOutputBtn">Bersihkan</button></div>
+  <section class="grid">
+    <div class="card wide">
+      <h2>◉ Display Color Enhancer</h2><p>Kontrol utama mengikuti metode AyundaRisuColorEnhancer: panggilan <code>SurfaceFlinger 1022 f</code> dengan skala <b>1.0–2.0</b>, bukan persentase 0–100. Mulai dari 1.3–1.5; 2.0 bisa membuat warna terlalu pekat. Perintah ini bergantung pada dukungan ROM/SurfaceFlinger.</p>
+      <label for="colorScale">Color enhancer scale</label><div class="range-line"><input type="range" min="1.0" max="2.0" step="0.1" value="1.5" id="colorScale"><span class="range-value" id="colorScaleValue">1.5</span></div>
+      <div class="buttons"><button data-color-scale="1.0">Normal 1.0</button><button data-color-scale="1.3">Vivid 1.3</button><button data-color-scale="1.5">Rich 1.5</button><button data-color-scale="1.8">Extra 1.8</button><button data-color-scale="2.0">Max 2.0</button></div>
+      <button class="primary" id="applyColorScaleBtn" style="width:100%;margin-top:9px">Terapkan Color Enhancer</button>
+      <p class="hint">IPS tetap IPS: saturasi memperkuat warna, tetapi tidak mengubah struktur piksel, kontras native, atau kemampuan hitam-per-piksel AMOLED. Jika AyundaRisuColorEnhancer aktif bersamaan, kedua pengendali SurfaceFlinger bisa saling menimpa.</p>
+      <details class="details-box"><summary>Kontrol native Android (0–100)</summary><p>Ini adalah API warna Android yang terpisah dari skala SurfaceFlinger di atas. Nilai maksimum 100 pada kontrol native bukan pembatas Color Enhancer.</p>
+        <label for="saturation">Native saturation</label><div class="range-line"><input type="range" min="0" max="100" step="1" value="100" id="saturation"><span class="range-value" id="saturationValue">100</span></div>
+        <div class="buttons"><button data-saturation="100">Normal 100</button><button data-saturation="85">Soft 85</button><button data-saturation="60">Low 60</button><button data-saturation="0">Grayscale</button></div>
+        <button class="secondary" id="applySaturationBtn" style="width:100%;margin-top:9px">Terapkan native saturation</button>
+      </details>
+    </div>
+  <div class="card wide"><div id="actionStatus" class="notice">WebUI belum menjalankan aksi apa pun.</div><pre class="mono" id="output">Menunggu koneksi KernelSU WebUI…</pre></div></section>
+  <p class="foot">HanniBomb v1.5.0 · Hannhanniii. CPU governor, Wi-Fi scan throttle, TCP preset, DSCP, traffic shaping, dan game auto-profile memiliki kontrol terpisah. Fitur yang tidak didukung harus ditolak atau dilewati. Tes otomatis source tidak menggantikan uji langsung di perangkat.</p>
+</main></section>
+</div>
+<nav class="glass-dock hb-dock" aria-label="Navigasi HanniBomb">
+  <button class="dock-item active" type="button" data-jump="nav-profile" aria-label="Profil">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg><span>Home</span>
+  </button>
+  <button class="dock-item" type="button" data-jump="nav-gaming" aria-label="Gaming">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 18.5a9 9 0 1 1 15 0"/><path d="m12 12 4-4"/><circle cx="12" cy="12" r="1"/></svg><span>Gaming</span>
+  </button>
+  <button class="dock-item" type="button" data-jump="nav-network" aria-label="Jaringan">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 8.8a15 15 0 0 1 19 0"/><path d="M5.5 12a10.3 10.3 0 0 1 13 0"/><path d="M8.7 15.2a5.3 5.3 0 0 1 6.6 0"/><circle cx="12" cy="19" r=".8"/></svg><span>Network</span>
+  </button>
+  <button class="dock-item" type="button" data-jump="nav-diagnostics" aria-label="Diagnostik">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="m19.2 13.8 1.1.9-1.3 2.3-1.4-.5a7.7 7.7 0 0 1-1.7 1l-.2 1.5h-2.7l-.3-1.5a7.7 7.7 0 0 1-1.8-1l-1.4.5-1.3-2.3 1.1-.9a7.2 7.2 0 0 1 0-2l-1.1-.9 1.3-2.3 1.4.5a7.7 7.7 0 0 1 1.8-1l.3-1.5h2.7l.2 1.5a7.7 7.7 0 0 1 1.7 1l1.4-.5 1.3 2.3-1.1.9a7.2 7.2 0 0 1 0 2Z"/></svg><span>System</span>
+  </button>
+</nav>
+<div class="toastarea" id="toastArea" aria-live="polite"></div>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const api=window.ksu;
+const pageRail=document.getElementById('hbPages');
+const pageOrder=['home','gaming','network','system'];
+function goPage(index,behavior){const i=Math.max(0,Math.min(pageOrder.length-1,index));const page=document.querySelector('[data-page="'+pageOrder[i]+'"]');if(page)pageRail.scrollTo({left:page.offsetLeft,behavior:'auto'});document.querySelectorAll('.dock-item').forEach((el,n)=>{el.classList.toggle('active',n===i);el.setAttribute('aria-current',n===i?'page':'false')});}
+document.querySelectorAll('[data-jump]').forEach((item,index)=>item.addEventListener('click',()=>goPage(index,'auto')));
+let swipeStartX=0,swipeStartY=0;
+pageRail.addEventListener('touchstart',e=>{if(e.touches.length===1){swipeStartX=e.touches[0].clientX;swipeStartY=e.touches[0].clientY}},{passive:true});
+pageRail.addEventListener('touchend',e=>{if(!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-swipeStartX,dy=e.changedTouches[0].clientY-swipeStartY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.15){const idx=Math.round(pageRail.scrollLeft/window.innerWidth);goPage(idx+(dx<0?1:-1),'auto');}},{passive:true});
+let pageTick=0;pageRail.addEventListener('scroll',()=>{cancelAnimationFrame(pageTick);pageTick=requestAnimationFrame(()=>{const idx=Math.max(0,Math.min(3,Math.round(pageRail.scrollLeft/window.innerWidth)));document.querySelectorAll('.dock-item').forEach((el,n)=>el.classList.toggle('active',n===idx));});},{passive:true});
+let seq=0, state={}, moduleDir='/data/adb/modules/hannibomb', bridgeReady=!!(api&&typeof api.exec==='function');
+function moduleCommand(args){
+  return 'sh '+shellQuote(moduleDir.replace(/\/$/, '')+'/webui.sh')+' '+args.map(shellQuote).join(' ')+'; hb_rc=$?; printf "\\n__HANNIBOMB_RC__=%s\\n" "$hb_rc"';
+}
+function normalizeResult(res){
+  const out=String(res&&res.stdout||'');
+  const match=out.match(/(?:^|\n)__HANNIBOMB_RC__=(\d+)\s*$/);
+  if(!match)return res||{code:1,stdout:'',stderr:'WebUI bridge returned no result'};
+  return {code:Number(match[1]),stdout:out.slice(0,match.index).replace(/\n$/,''),stderr:String(res&&res.stderr||'')};
+}
+function toast(message){
+  const area=$('toastArea'),el=document.createElement('div');el.className='toast';el.textContent=message;area.appendChild(el);
+  try{if(api&&typeof api.toast==='function')api.toast(message);}catch(e){}
+  setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el);},3600);
+}
+function shellQuote(v){return "'"+String(v).replace(/'/g,"'\\''")+"'";}
+function bridgeExec(command){
+  return new Promise((resolve,reject)=>{
+    if(!bridgeReady){reject(new Error('KernelSU WebUI API tidak tersedia. Buka halaman ini dari halaman modul di KernelSU/KernelSU Next.'));return;}
+    const name='hb_callback_'+Date.now()+'_'+(++seq);let done=false;
+    const finish=(code,stdout,stderr)=>{if(done)return;done=true;if(timer)clearTimeout(timer);try{delete window[name];}catch(e){}resolve({code:Number(code)||0,stdout:String(stdout==null?'':stdout),stderr:String(stderr==null?'':stderr)});};
+    window[name]=finish;
+    const timer=setTimeout(()=>finish(124,'','WebUI exec timed out or callback API is unsupported'),30000);
+    try{
+      // The two-argument callback overload is supported by WebUI-Next and older callback-based managers.
+      const ret=api.exec(command,name);
+      // Some older/injected APIs execute synchronously and return stdout instead of invoking a callback.
+      if(typeof ret==='string' && !done) finish(0,ret,'');
+      else if(ret&&typeof ret==='object'&&!done&&('stdout' in ret||'errno' in ret||'code' in ret)) finish(typeof ret.errno==='number'?ret.errno:(typeof ret.code==='number'?ret.code:0),ret.stdout,ret.stderr);
+    }catch(err){if(timer)clearTimeout(timer);try{delete window[name];}catch(e){}reject(err);} 
+  });
+}
+function parseKv(text){const out={};String(text||'').split(/\r?\n/).forEach(line=>{const i=line.indexOf('=');if(i>0)out[line.slice(0,i).trim()]=line.slice(i+1).trim();});return out;}
+async function run(args,opts={}){
+  if(!bridgeReady){toast('Buka WebUI lewat KernelSU Manager.');return null;}
+  document.body.classList.add('busy');$('actionStatus').className='notice';$('actionStatus').textContent='Menjalankan perintah dan memeriksa hasil…';
+  try{
+    const command=moduleCommand(args);
+    const res=normalizeResult(await bridgeExec(command));const text=(res.stdout+(res.stderr?'\n[stderr]\n'+res.stderr:'')).trim()||('(tidak ada output; exit='+res.code+')');
+    $('output').textContent=text;
+    const failed=res.code!==0||/^(ERROR=|.*rejected|.*no change made)/mi.test(text);
+    $('actionStatus').className='notice '+(failed?'bad':'ok');$('actionStatus').textContent=(failed?'Perintah gagal / perlu pemeriksaan. ':'Perintah selesai. ')+'Exit code: '+res.code;
+    if(!failed && opts.toast){toast(opts.toast);}
+    if(opts.refresh!==false)await refreshStatus();
+    return res;
+  }catch(e){$('actionStatus').className='notice bad';$('actionStatus').textContent=String(e&&e.message||e);$('output').textContent=String(e&&e.stack||e);toast('WebUI belum terhubung ke root bridge.');return null;}
+  finally{document.body.classList.remove('busy');}
+}
+function value(key,fallback='—'){return state[key]!==undefined&&state[key]!==''?state[key]:fallback;}
+function num(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+function prettyProfile(s){return ({balanced:'Balance',performance:'Performance',battery:'Battery Saver'})[s]||s||'—';}
+function setDot(ok){$('bridgeDot').className='dot '+(ok?'ok':'bad');$('bridgeLabel').textContent=ok?'KernelSU root bridge siap':'KernelSU API tidak ditemukan';}
+async function refreshStatus(){
+  if(!bridgeReady){setDot(false);$('safetyNotice').className='notice bad';$('safetyNotice').textContent='API root WebUI tidak terdeteksi. Jangan membuka file HTML ini di browser biasa; buka halaman melalui kartu modul KernelSU / KernelSU Next.';return;}
+  try{
+    const res=normalizeResult(await bridgeExec(moduleCommand(['status'])));
+    if(res.code!==0||!res.stdout.includes('VERSION=')){throw new Error(res.stderr||res.stdout||'Gagal membaca status modul.');}
+    state=parseKv(res.stdout);setDot(true);
+    $('versionPill').textContent='v'+value('VERSION','1.5.0');$('devicePill').textContent='Perangkat: '+value('MODEL','unknown');const rs=value('RUST_DAEMON_STATE','unknown'),rk=value('RUST_DAEMON_KIND','unknown');$('runtimePill').textContent='Runtime: '+(rs==='running'?'Rust aktif':rs==='rust_binary_not_built'?'Shell fallback':rs==='disabled_by_config'?'Rust nonaktif':rs);$('runtimePill').title='Runtime '+rk+' / '+rs;
+    $('profileValue').textContent=prettyProfile(value('SELECTED_PROFILE'));$('modeValue').textContent=value('MODE')==='hybrid'?'Hybrid Otomatis':'Manual';
+    $('reasonValue').textContent=value('AI_REASON');$('thermalValue').textContent=value('THERMAL_STATUS');$('kernelValue').textContent=value('KERNEL');
+    $('modelValue').textContent=value('MODEL');$('androidValue').textContent=value('ANDROID')+' / API '+value('API');$('boardValue').textContent=value('BOARD');$('saverValue').textContent=value('LOW_POWER');
+    const b=num(value('BATTERY_LEVEL',''));$('batteryValue').textContent=b===null?'—':b+'%';
+    const tr=num(value('BATTERY_TEMP_RAW',''));$('tempValue').textContent=tr===null?'—':(tr/10).toFixed(1)+'°C';
+    const mt=num(value('MEM_TOTAL_KB','')),ma=num(value('MEM_AVAILABLE_KB',''));$('memoryValue').textContent=mt&&ma?Math.round(ma/1024)+' / '+Math.round(mt/1024)+' MB':'—';
+    const st=num(value('DATA_FREE_KB',''));$('storageValue').textContent=st===null?'—':(st/1024).toFixed(0)+' MB';$('watcherValue').textContent=value('WATCHER');
+    $('governorToggle').checked=value('ENABLE_GOVERNOR_CONTROL')==='1';$('adaptiveToggle').checked=value('AI_ADAPTIVE')==='1';$('notificationToggle').checked=value('ENABLE_NOTIFICATIONS')==='1';
+    $('gamePackagesValue').textContent=value('GAME_PACKAGES','Belum dikonfigurasi');$('gameAutoValue').textContent=value('ENABLE_GAME_AUTO_PROFILE')==='1'?'Aktif':'Nonaktif';$('gameRunningValue').textContent=value('GAME_RUNNING')==='1'?'Ya':'Tidak';
+    $('networkEnabledValue').textContent=value('ENABLE_NETWORK_TWEAKS')==='1'?'Aktif':'Nonaktif';$('tcpAvailableValue').textContent=value('TCP_AVAILABLE','unknown');$('tcpCurrentValue').textContent=value('TCP_CURRENT','unknown');$('tcpCc').value=value('NETWORK_CUSTOM_CC','auto');$('tcpBuffer').value=value('NETWORK_CUSTOM_BUFFER','4194304');
+    $('dnsModeValue').textContent=value('DNS_MODE');$('dnsHostValue').textContent=value('DNS_HOST');$('colorScale').value=value('COLOR_SCALE','1.5');$('colorScaleValue').textContent=Number(value('COLOR_SCALE','1.5')).toFixed(1);$('dscpPort').value=value('DSCP_PORT','27015');$('dscpValue').value=value('DSCP_VALUE','46');$('dscpProtocol').value=value('DSCP_PROTOCOL','udp');$('dscpStatusValue').textContent=value('DSCP_ACTIVE')==='1'?'Rule terbaca aktif':'Tidak aktif / belum terverifikasi';
+    $('tcInterface').value=value('TC_INTERFACE')==='—'||!value('TC_INTERFACE')?value('DEFAULT_INTERFACE',''):value('TC_INTERFACE');$('tcRate').value=value('TC_RATE','10');$('ifaceValue').textContent=value('DEFAULT_INTERFACE');$('qdiscValue').textContent=value('DEFAULT_QDISC');$('tcEnabledValue').textContent=value('ENABLE_TC_SHAPING')==='1'?'Diaktifkan':'Nonaktif';$('tcRuntimeValue').textContent=value('TC_ACTIVE')==='1'?'TBF aktif terverifikasi':(value('ENABLE_TC_SHAPING')==='1'?'Belum aktif / belum terverifikasi':'Tidak aktif');$('wifiEnabledValue').textContent=value('WIFI_THROTTLE_STATE','unknown');
+    document.querySelectorAll('[data-profile]').forEach(b=>b.classList.toggle('selected',state.MODE==='manual'&&b.dataset.profile===state.PROFILE));
+    $('hybridBtn').classList.toggle('selected',state.MODE==='hybrid');
+    const gov=state.ENABLE_GOVERNOR_CONTROL==='1';
+    $('safetyNotice').className='notice '+(gov?'':'');$('safetyNotice').textContent=gov?'Kontrol governor ON. Hanya nilai governor yang terdaftar pada policy kernel yang akan dicoba; cek laporan/log untuk hasil aktual.':'Profil tersimpan aktif, tetapi kontrol governor CPU masih OFF. Ini berarti pemilihan mode belum menulis governor CPU; GPU/frekuensi/thermal tidak diubah.';
+  }catch(e){setDot(false);$('actionStatus').className='notice bad';$('actionStatus').textContent='Tidak bisa membaca status: '+String(e&&e.message||e);}
+}
+function ask(message){try{return window.confirm(message);}catch(e){return true;}}
+document.querySelectorAll('[data-profile]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.profile; if(p==='performance'&&!state.ENABLE_GOVERNOR_CONTROL&& !ask('Pilih profil Performance. Kontrol governor CPU masih OFF, jadi ini belum mengubah governor/frekuensi. Lanjutkan?'))return;run(['profile',p],{toast:'Profil '+prettyProfile(p)+' dipilih.'});}));
+$('hybridBtn').addEventListener('click',()=>run(['hybrid'],{toast:'Hybrid Otomatis dipilih.'}));
+$('refreshBtn').addEventListener('click',refreshStatus);
+$('governorToggle').addEventListener('change',e=>{const on=e.target.checked;if(on&&!ask('Aktifkan penulisan CPU governor? HanniBomb hanya akan mencoba governor yang terdaftar per CPU policy. Dampak suhu/performa bergantung kernel.')){e.target.checked=false;return;}run(['governor',on?'1':'0'],{toast:on?'Kontrol governor diaktifkan.':'Kontrol governor dinonaktifkan.'});});
+$('adaptiveToggle').addEventListener('change',e=>run(['adaptive',e.target.checked?'1':'0'],{toast:'Pengaturan AI adaptif diperbarui.'}));
+$('notificationToggle').addEventListener('change',e=>run(['notifications',e.target.checked?'1':'0'],{toast:'Preferensi notifikasi Android diperbarui.'}));
+$('testNotificationBtn').addEventListener('click',async()=>{const r=await run(['test-notification'],{refresh:false});if(r&&r.code===0){toast('Perintah notifikasi diterima Android. Jika notifikasi tidak tampil, periksa pengaturan notifikasi sistem dan baca output diagnostik.');}else{toast('Tes notifikasi gagal; penyebab ditampilkan di output.');}});
+$('colorScale').addEventListener('input',e=>$('colorScaleValue').textContent=Number(e.target.value).toFixed(1));
+document.querySelectorAll('[data-color-scale]').forEach(b=>b.addEventListener('click',()=>{$('colorScale').value=b.dataset.colorScale;$('colorScaleValue').textContent=Number(b.dataset.colorScale).toFixed(1);}));
+$('applyColorScaleBtn').addEventListener('click',()=>{const scale=Number($('colorScale').value).toFixed(1);if(!ask('Kirim SurfaceFlinger scale '+scale+'? Kompatibilitas bergantung ROM dan bisa bertabrakan dengan modul warna lain.'))return;run(['color','ayunda',scale],{toast:'Permintaan Color Enhancer dikirim; periksa balasan SurfaceFlinger.'});});
+$('saturation').addEventListener('input',e=>$('saturationValue').textContent=e.target.value);
+document.querySelectorAll('[data-saturation]').forEach(b=>b.addEventListener('click',()=>{$('saturation').value=b.dataset.saturation;$('saturationValue').textContent=b.dataset.saturation;}));
+$('applySaturationBtn').addEventListener('click',()=>run(['color','native',$('saturation').value],{toast:'Permintaan native saturation dikirim.'}));
+let installedApps=[], selectedPackages=new Set();
+function selectedFromState(){selectedPackages=new Set(String(value('GAME_PACKAGES','')).split(',').filter(Boolean));}
+function renderAppChoices(){
+  const q=$('appSearch').value.trim().toLowerCase(),host=$('appChoices');host.textContent='';
+  const matches=installedApps.filter(a=>(a.label+' '+a.pkg).toLowerCase().includes(q));
+  const rows=matches.slice(0,100);
+  $('appListStatus').textContent=matches.length+' aplikasi cocok · menampilkan '+rows.length+' pertama (gunakan pencarian untuk mempersempit) · '+installedApps.length+' terdaftar';
+  const frag=document.createDocumentFragment();
+  rows.forEach(a=>{const label=document.createElement('label');label.className='app-choice';const cb=document.createElement('input');cb.type='checkbox';cb.checked=selectedPackages.has(a.pkg);cb.dataset.pkg=a.pkg;cb.setAttribute('aria-label','Pilih '+a.label);cb.addEventListener('change',()=>{if(cb.checked)selectedPackages.add(a.pkg);else selectedPackages.delete(a.pkg);});const name=document.createElement('span');name.className='app-title';name.textContent=a.label;const pkg=document.createElement('small');pkg.textContent=a.pkg;name.appendChild(pkg);label.append(cb,name);frag.appendChild(label);});
+  host.appendChild(frag);if(!rows.length)$('appListStatus').textContent='Tidak ada aplikasi yang cocok.';
+}
+async function loadInstalledApps(){
+  $('appPicker').hidden=false;$('appListStatus').textContent='Memuat aplikasi dari Package Manager…';$('appChoices').textContent='';
+  const r=await run(['apps-list',$('showSystemApps').checked?'all':'user'],{refresh:false});
+  if(!r||r.code!==0){$('appListStatus').textContent='Gagal membaca daftar aplikasi. Lihat output diagnostik di halaman System.';return;}
+  installedApps=r.stdout.split(/\r?\n/).map(line=>{const m=line.match(/^APP\|([^|]+)\|(.*)$/);return m?{pkg:m[1],label:m[2]||m[1]}:null;}).filter(Boolean);
+  // Preserve saved packages even if the app is no longer installed, but don't auto-select unrelated apps.
+  selectedFromState();renderAppChoices();
+}
+$('addGamesBtn').addEventListener('click',()=>{if($('appPicker').hidden)loadInstalledApps();else $('appPicker').hidden=true;});
+$('reloadGamesBtn').addEventListener('click',loadInstalledApps);
+$('showSystemApps').addEventListener('change',loadInstalledApps);
+$('appSearch').addEventListener('input',renderAppChoices);
+$('selectVisibleAppsBtn').addEventListener('click',()=>{const q=$('appSearch').value.trim().toLowerCase();installedApps.filter(a=>(a.label+' '+a.pkg).toLowerCase().includes(q)).slice(0,100).forEach(a=>selectedPackages.add(a.pkg));renderAppChoices();});
+$('clearAppSelectionBtn').addEventListener('click',()=>{selectedPackages.clear();renderAppChoices();});
+async function saveSelectedGames(){const pkgs=Array.from(selectedPackages).sort().join(',');if(!pkgs){toast('Pilih minimal satu aplikasi terlebih dahulu.');return false;}const r=await run(['game-packages',pkgs],{toast:'Pilihan game disimpan.'});if(r&&r.code===0){state.GAME_PACKAGES=pkgs;$('gamePackagesValue').textContent=pkgs.split(',').length+' aplikasi dipilih';return true;}return false;}
+$('saveGamesBtn').addEventListener('click',saveSelectedGames);
+$('commitAppsBtn').addEventListener('click',async()=>{if(await saveSelectedGames())$('appPicker').hidden=true;});
+$('gameAutoBtn').addEventListener('click',async()=>{if(!selectedPackages.size)selectedFromState();if(!selectedPackages.size){toast('Tekan Tambahkan game dan pilih aplikasi dahulu.');return;}if(!ask('Aktifkan deteksi foreground sekitar setiap 60 detik? Mode Performance sementara tetap tunduk pada batas baterai/suhu.'))return;const saved=await saveSelectedGames();if(saved)run(['game-auto','1'],{toast:'Deteksi game otomatis aktif.'});});
+$('gameStopBtn').addEventListener('click',()=>run(['game-auto','0'],{toast:'Deteksi game otomatis dimatikan.'}));
+document.querySelectorAll('[data-network]').forEach(b=>b.addEventListener('click',()=>{if(!ask('Terapkan preset TCP '+b.dataset.network+'? Fitur ini menulis hanya node yang diizinkan dan didukung kernel.'))return;run(['network-preset',b.dataset.network],{toast:'Preset TCP '+b.dataset.network+' diproses.'});}));
+$('applyCustomTcpBtn').addEventListener('click',()=>{const cc=$('tcpCc').value.trim()||'auto',buf=$('tcpBuffer').value;if(!/^[A-Za-z0-9_.-]+$/.test(cc)||!/^[0-9]+$/.test(buf)){toast('Algoritma/buffer tidak valid.');return;}if(!ask('Terapkan TCP Custom? Algoritma yang tidak tersedia akan dilewati.'))return;run(['network-custom',cc,buf],{toast:'Preset TCP Custom diproses.'});});
+$('networkRestoreBtn').addEventListener('click',()=>{if(ask('Pulihkan node TCP HanniBomb yang belum diubah pihak lain?'))run(['network-restore'],{toast:'Pemulihan TCP dijalankan.'});});
+$('dnsProvider').addEventListener('change',()=>{const v=$('dnsProvider').value;if(v==='custom'){$('dnsHost').focus();return;}$('dnsHost').value=v;});
+$('dnsProviderBtn').addEventListener('click',()=>{const v=$('dnsProvider').value;if(v==='custom'){$('dnsHost').focus();toast('Masukkan hostname provider kustom terlebih dahulu.');return;}const host=$('dnsHost').value.trim()||v;if(host!==v&&$('dnsHost').value.trim()!==''){toast('Hostname pada kolom berbeda dari provider terpilih. Pilih provider lagi atau gunakan hostname kustom.');return;}if(ask('Terapkan Android Private DNS: '+v+'? Jika tidak bisa tersambung, kembalikan ke Automatic.'))run(['dns','hostname',v],{toast:'Permintaan DNS provider dikirim.'});});
+$('dnsHostBtn').addEventListener('click',()=>{const host=$('dnsHost').value.trim();if(!/^(?=.{1,253}$)[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/.test(host)){toast('Hostname DNS tidak valid.');return;}if(ask('Ubah Private DNS ke hostname '+host+'? Perubahan dapat memengaruhi konektivitas.'))run(['dns','hostname',host],{toast:'Permintaan Private DNS dikirim.'});});
+$('dnsAutoBtn').addEventListener('click',()=>{if(ask('Kembalikan Private DNS ke Automatic?'))run(['dns','auto'],{toast:'Private DNS Automatic diproses.'});});$('dnsOffBtn').addEventListener('click',()=>{if(ask('Matikan Android Private DNS? Ini mengurangi proteksi DNS-over-TLS.'))run(['dns','off'],{toast:'Private DNS Off diproses.'});});$('dnsRestoreBtn').addEventListener('click',()=>run(['dns-restore'],{toast:'Pemulihan DNS dicoba.'}));
+$('applyDscpBtn').addEventListener('click',()=>{const port=$('dscpPort').value,val=$('dscpValue').value,proto=$('dscpProtocol').value;if(!/^[0-9]+$/.test(port)||Number(port)<1||Number(port)>65535||!/^[0-9]+$/.test(val)||Number(val)>63){toast('Port harus 1–65535 dan DSCP 0–63.');return;}if(!ask('Terapkan DSCP pada paket outbound '+proto.toUpperCase()+' port '+port+' dengan DSCP '+val+'? Tidak semua jaringan menghormati tanda DSCP.'))return;run(['dscp','apply',port,val,proto],{toast:'DSCP diminta; cek hasil target kernel.'});});
+$('restoreDscpBtn').addEventListener('click',()=>{if(ask('Hapus chain DSCP yang dibuat HanniBomb?'))run(['dscp','restore'],{toast:'Pemulihan DSCP diminta.'});});
+$('applyTcBtn').addEventListener('click',()=>{const iface=$('tcInterface').value.trim(),rate=$('tcRate').value;if(!/^[A-Za-z0-9_.:-]+$/.test(iface)||!/^[0-9]+$/.test(rate)||Number(rate)<2||Number(rate)>100){toast('Interface tidak valid atau rate harus 2–100 Mbit/s.');return;}if(!ask('Aktifkan tc TBF '+rate+' Mbit/s di '+iface+'? Ini hanya berjalan bila root qdisc saat ini noqueue; koneksi dapat berubah.'))return;run(['tc-apply',iface,rate],{toast:'Permintaan tc shaping diproses.'});});
+$('restoreTcBtn').addEventListener('click',()=>{if(ask('Pulihkan tc shaping HanniBomb jika qdisc TBF yang tercatat masih aktif?'))run(['tc-restore'],{toast:'Pemulihan tc diminta.'});});
+$('pingBtn').addEventListener('click',()=>{const host=$('pingTarget').value.trim();if(!/^[A-Za-z0-9._:-]+$/.test(host)||host[0]==='-'){toast('Host/IP tidak valid.');return;}run(['ping',host],{refresh:false});});
+$('wifiEnableBtn').addEventListener('click',()=>{if(ask('Aktifkan Wi-Fi scan throttling Android? Background scan dapat lebih jarang.'))run(['wifi-throttle','1'],{toast:'Wi-Fi scan throttling diproses.'});});$('wifiRestoreBtn').addEventListener('click',()=>run(['wifi-throttle','0'],{toast:'Pemulihan Wi-Fi throttle diminta.'}));
+$('reportBtn').addEventListener('click',()=>run(['report'],{refresh:false}));$('logBtn').addEventListener('click',()=>run(['log'],{refresh:false}));$('clearOutputBtn').addEventListener('click',()=>{$('output').textContent='Output dibersihkan.';$('actionStatus').className='notice';$('actionStatus').textContent='Tidak ada output aksi yang ditampilkan.';});
+// Keep the floating dock in sync with the visible section; this is UI-only and does not invoke root.
+try{
+  if('IntersectionObserver' in window){
+    const navMap=[['nav-profile',document.querySelector('[data-jump="nav-profile"]')],['nav-gaming',document.querySelector('[data-jump="nav-gaming"]')],['nav-network',document.querySelector('[data-jump="nav-network"]')],['nav-diagnostics',document.querySelector('[data-jump="nav-diagnostics"]')]];
+    const navObserver=new IntersectionObserver(entries=>{
+      const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if(!visible)return;
+      const button=document.querySelector('[data-jump="'+visible.target.id+'"]');
+      if(button)document.querySelectorAll('.dock-item').forEach(el=>el.classList.toggle('active',el===button));
+    },{root:null,rootMargin:'-10% 0px -70% 0px',threshold:[0,.1,.25,.5]});
+    navMap.forEach(([id])=>{const el=document.getElementById(id);if(el)navObserver.observe(el);});
+  }
+}catch(e){}
+// Prefer the manager-reported module directory when it belongs to this module; otherwise keep the stable fallback.
+try{if(api&&typeof api.moduleInfo==='function'){const raw=api.moduleInfo();const info=typeof raw==='string'?JSON.parse(raw):raw;if(info&&info.id==='hannibomb'&&typeof info.moduleDir==='string'&&/^\/data\/adb\/(?:modules|modules_update)\/hannibomb\/?$/.test(info.moduleDir))moduleDir=info.moduleDir.replace(/\/$/,'');}}catch(e){}
+setDot(bridgeReady);if(!bridgeReady){$('output').textContent='KernelSU JavaScript bridge tidak ditemukan. Buka halaman ini dari halaman WebUI modul KernelSU/KernelSU Next. Jika manager tidak mendukung bridge WebUI, kontrol root sengaja tidak dijalankan.';}else{$('bridgeLabel').textContent='KernelSU bridge terdeteksi';refreshStatus();}
+})();
+</script>
+</body>
+</html>
