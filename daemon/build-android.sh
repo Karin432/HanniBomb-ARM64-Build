@@ -1,16 +1,52 @@
-#!/system/bin/sh
-# Run on a build host with Rust and Android NDK installed (not on the phone).
+
+#!/usr/bin/env sh
+# HanniBomb v1.5.0 - Android ARM64 build
 set -eu
-command -v rustc >/dev/null 2>&1 || { echo 'ERROR: rustc is required' >&2; exit 1; }
-: "${ANDROID_NDK_HOME:?Set ANDROID_NDK_HOME to Android NDK path}"
-HOST_TAG=${ANDROID_NDK_HOST_TAG:-linux-x86_64}
-API=${ANDROID_API_LEVEL:-29}
-TARGET=aarch64-linux-android
+
+TARGET="aarch64-linux-android"
+API="${ANDROID_API_LEVEL:-29}"
+HOST_TAG="${ANDROID_NDK_HOST_TAG:-linux-x86_64}"
+: "${ANDROID_NDK_HOME:?ERROR: ANDROID_NDK_HOME belum ditetapkan}"
+
 TOOLCHAIN="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG/bin"
-[ -x "$TOOLCHAIN/${TARGET}${API}-clang" ] || { echo "ERROR: NDK linker not found: $TOOLCHAIN/${TARGET}${API}-clang" >&2; exit 1; }
-OUT=${1:-bin/hannibombd}
+LINKER="$TOOLCHAIN/${TARGET}${API}-clang"
+OUT="${1:-bin/hannibombd}"
+
+command -v rustc >/dev/null 2>&1 || {
+    echo "ERROR: rustc tidak ditemukan" >&2
+    exit 1
+}
+
+[ -x "$LINKER" ] || {
+    echo "ERROR: Android NDK linker tidak ditemukan: $LINKER" >&2
+    exit 1
+}
+
 mkdir -p "$(dirname "$OUT")"
-RUSTFLAGS="-C linker=$TOOLCHAIN/${TARGET}${API}-clang -C link-arg=-Wl,-z,max-page-size=16384" \
-  rustc --edition=2021 --target "$TARGET" -C opt-level=z -C strip=symbols daemon/hannibombd.rs -o "$OUT"
+
+echo "===== HANNIBOMB ARM64 BUILD ====="
+echo "Target : $TARGET"
+echo "API    : $API"
+echo "Linker : $LINKER"
+rustc --version
+
+# Penting: berikan linker langsung kepada rustc.
+# RUSTFLAGS tidak otomatis dibaca ketika menjalankan rustc langsung.
+rustc \
+    --edition=2021 \
+    --target "$TARGET" \
+    -C "linker=$LINKER" \
+    -C link-arg=-Wl,-z,max-page-size=16384 \
+    -C opt-level=z \
+    -C strip=symbols \
+    daemon/hannibombd.rs \
+    -o "$OUT"
+
 chmod 0755 "$OUT"
-file "$OUT" 2>/dev/null || true
+
+echo "===== VALIDASI BINER ====="
+file "$OUT"
+readelf -h "$OUT"
+readelf -h "$OUT" | grep -q 'AArch64'
+
+echo "BUILD ARM64 BERHASIL"
