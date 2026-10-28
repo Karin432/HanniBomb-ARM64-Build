@@ -10,6 +10,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -26,50 +27,59 @@ jobs:
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
+          packages: 'platform-tools'
           accept-android-sdk-licenses: true
           log-accepted-android-sdk-licenses: false
 
       - name: Install Android NDK
+        shell: bash
         run: |
-          sdkmanager "ndk;27.2.12479018"
+          set -euo pipefail
+          sdkmanager --install "ndk;27.2.12479018"
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
           echo "ANDROID_NDK_HOST_TAG=linux-x86_64" >> "$GITHUB_ENV"
           echo "ANDROID_API_LEVEL=29" >> "$GITHUB_ENV"
 
       - name: Compile ARM64 daemon
+        shell: bash
         run: |
           set -euo pipefail
+          mkdir -p bin
           sh daemon/build-android.sh bin/hannibombd
+          test -s bin/hannibombd
           file bin/hannibombd
           readelf -h bin/hannibombd
           readelf -h bin/hannibombd | grep -q 'AArch64'
-          test -s bin/hannibombd
           chmod 0755 bin/hannibombd
 
       - name: Assemble KernelSU module ZIP
         shell: bash
         run: |
           set -euo pipefail
+
           STAGE="$RUNNER_TEMP/hannibomb-module"
+          ZIP="$GITHUB_WORKSPACE/HanniBomb_v1.5.0_KSU_Install.zip"
+
           mkdir -p "$STAGE/bin" "$STAGE/webroot"
 
           cp module.prop service.sh watcher.sh common.sh \
              customize.sh action.sh uninstall.sh webui.sh config.conf "$STAGE/"
+
           cp -a webroot/. "$STAGE/webroot/"
           install -m 0755 bin/hannibombd "$STAGE/bin/hannibombd"
 
           cd "$STAGE"
-          zip -qr "$GITHUB_WORKSPACE/HanniBomb_v1.5.0_KSU_Install.zip" .
+          zip -qr "$ZIP" .
 
           cd "$GITHUB_WORKSPACE"
-          unzip -t HanniBomb_v1.5.0_KSU_Install.zip
-          unzip -l HanniBomb_v1.5.0_KSU_Install.zip
-          unzip -p HanniBomb_v1.5.0_KSU_Install.zip module.prop
-          unzip -p HanniBomb_v1.5.0_KSU_Install.zip module.prop | grep -q '^id=hannibomb$'
-          unzip -l HanniBomb_v1.5.0_KSU_Install.zip | grep -q 'bin/hannibombd'
-          unzip -l HanniBomb_v1.5.0_KSU_Install.zip | grep -q 'webroot/index.html'
+          unzip -t "$ZIP"
+          unzip -l "$ZIP"
+          unzip -p "$ZIP" module.prop | tee "$RUNNER_TEMP/module.prop"
+          grep -q '^id=hannibomb$' "$RUNNER_TEMP/module.prop"
+          unzip -l "$ZIP" | grep -q 'bin/hannibombd'
+          unzip -l "$ZIP" | grep -q 'webroot/index.html'
 
       - name: Upload ARM64 daemon
         uses: actions/upload-artifact@v4
