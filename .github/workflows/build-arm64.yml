@@ -1,3 +1,4 @@
+
 name: HanniBomb ARM64 Android Build
 
 on:
@@ -17,19 +18,19 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
-          
+
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-    
-            - name: Set up Android SDK
+
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: true
           log-accepted-android-sdk-licenses: false
-          
+
       - name: Install Android NDK
         run: |
           sdkmanager "ndk;27.2.12479018"
@@ -39,6 +40,7 @@ jobs:
 
       - name: Compile ARM64 daemon
         run: |
+          set -euo pipefail
           sh daemon/build-android.sh bin/hannibombd
           file bin/hannibombd
           readelf -h bin/hannibombd
