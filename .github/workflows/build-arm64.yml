@@ -33,28 +33,59 @@ jobs:
           accept-android-sdk-licenses: true
           log-accepted-android-sdk-licenses: false
 
-      - name: Install Android NDK
+      - name: Install build tools and Android NDK
         shell: bash
         run: |
           set -euo pipefail
-          sdkmanager --install "ndk;27.2.12479018"
+
+          sudo apt-get update
+          sudo apt-get install -y binutils file zip unzip
+
+          sdkmanager --install "platform-tools" "ndk;27.2.12479018"
+
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
           echo "ANDROID_NDK_HOST_TAG=linux-x86_64" >> "$GITHUB_ENV"
           echo "ANDROID_API_LEVEL=29" >> "$GITHUB_ENV"
+
+      - name: Validate source files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f daemon/hannibombd.rs
+          test -f daemon/build-android.sh
+          test -f module.prop
+          test -f service.sh
+          test -f watcher.sh
+          test -f common.sh
+          test -f customize.sh
+          test -f action.sh
+          test -f uninstall.sh
+          test -f webui.sh
+          test -f config.conf
+          test -f webroot/index.html
+
+          sh -n daemon/build-android.sh
+          sh -n service.sh
+          sh -n watcher.sh
+          sh -n common.sh
+          sh -n customize.sh
+          sh -n action.sh
+          sh -n uninstall.sh
+          sh -n webui.sh
 
       - name: Compile ARM64 daemon
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p bin
+
           sh daemon/build-android.sh bin/hannibombd
+
           test -s bin/hannibombd
-          file bin/hannibombd
-          readelf -h bin/hannibombd
           readelf -h bin/hannibombd | grep -q 'AArch64'
           chmod 0755 bin/hannibombd
 
-      - name: Assemble KernelSU module ZIP
+      - name: Assemble and validate KernelSU ZIP
         shell: bash
         run: |
           set -euo pipefail
@@ -65,7 +96,8 @@ jobs:
           mkdir -p "$STAGE/bin" "$STAGE/webroot"
 
           cp module.prop service.sh watcher.sh common.sh \
-             customize.sh action.sh uninstall.sh webui.sh config.conf "$STAGE/"
+             customize.sh action.sh uninstall.sh webui.sh config.conf \
+             "$STAGE/"
 
           cp -a webroot/. "$STAGE/webroot/"
           install -m 0755 bin/hannibombd "$STAGE/bin/hannibombd"
@@ -74,12 +106,19 @@ jobs:
           zip -qr "$ZIP" .
 
           cd "$GITHUB_WORKSPACE"
+
           unzip -t "$ZIP"
-          unzip -l "$ZIP"
-          unzip -p "$ZIP" module.prop | tee "$RUNNER_TEMP/module.prop"
+          unzip -p "$ZIP" module.prop > "$RUNNER_TEMP/module.prop"
           grep -q '^id=hannibomb$' "$RUNNER_TEMP/module.prop"
-          unzip -l "$ZIP" | grep -q 'bin/hannibombd'
-          unzip -l "$ZIP" | grep -q 'webroot/index.html'
+
+          unzip -Z1 "$ZIP" > "$RUNNER_TEMP/zip-list.txt"
+          grep -Fxq 'bin/hannibombd' "$RUNNER_TEMP/zip-list.txt"
+          grep -Fxq 'webroot/index.html' "$RUNNER_TEMP/zip-list.txt"
+          grep -Fxq 'module.prop' "$RUNNER_TEMP/zip-list.txt"
+
+          echo "===== ZIP CONTENTS ====="
+          cat "$RUNNER_TEMP/zip-list.txt"
+          echo "KernelSU ZIP validation passed."
 
       - name: Upload ARM64 daemon
         uses: actions/upload-artifact@v4
