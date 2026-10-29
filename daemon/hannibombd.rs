@@ -65,6 +65,60 @@ fn battery_info() -> (String, String) {
     (level, temp)
 }
 
+
+// Read-only thermal telemetry; never writes thermal or performance controls.
+fn thermal_info() -> (usize, String, String) {
+    let root = Path::new("/sys/class/thermal");
+    let entries = match fs::read_dir(root) {
+        Ok(entries) => entries,
+        Err(_) => return (0, "unknown".to_string(), "unavailable".to_string()),
+    };
+
+    let mut count = 0usize;
+    let mut max_celsius: Option<i64> = None;
+    let mut max_zone = "unknown".to_string();
+
+    for entry in entries.flatten() {
+        let path = entry.path();
+        let name = entry.file_name().to_string_lossy().to_string();
+
+        if !name.starts_with("thermal_zone") {
+            continue;
+        }
+
+        let raw = match fs::read_to_string(path.join("temp")) {
+            Ok(value) => match value.trim().parse::<i64>() {
+                Ok(value) => value,
+                Err(_) => continue,
+            },
+            Err(_) => continue,
+        };
+
+        // Android usually reports millidegrees Celsius.
+        let celsius = if raw.abs() > 1000 { raw / 1000 } else { raw };
+
+        if !(-20..=150).contains(&celsius) {
+            continue;
+        }
+
+        count += 1;
+
+        if max_celsius.map(|current| celsius > current).unwrap_or(true) {
+            max_celsius = Some(celsius);
+            max_zone = fs::read_to_string(path.join("type"))
+                .map(|value| value.trim().replace(['\n', '\r'], " "))
+                .filter(|value| !value.is_empty())
+                .unwrap_or(name);
+        }
+    }
+
+    let max = max_celsius
+        .map(|value| value.to_string())
+        .unwrap_or_else(|| "unknown".to_string());
+
+    (count, max, max_zone)
+}
+
 fn should_stop(module: &Path, data: &Path) -> bool {
     !module.exists()
         || module.join("disable").exists()
@@ -151,15 +205,19 @@ fn main() {
             .unwrap_or_else(|| "unknown".to_string());
 
         let (battery_level, battery_temp) = battery_info();
+        let (thermal_zone_count, thermal_max_celsius, thermal_max_zone) = thermal_info();
 
         let status = format!(
-            "daemon=rust\nstate=running\npid={}\nandroid={}\nmodel={}\nmem_available={}\nbattery_level={}\nbattery_temperature={}\nuptime_seconds={}\npoll_seconds={}\n",
+            "daemon=rust\nstate=running\npid={}\nandroid={}\nmodel={}\nmem_available={}\nbattery_level={}\nbattery_temperature={}\nthermal_zone_count={}\nthermal_max_celsius={}\nthermal_max_zone={}\nuptime_seconds={}\npoll_seconds={}\n",
             std::process::id(),
             prop("ro.build.version.release"),
             prop("ro.product.model"),
             mem_available,
             battery_level,
             battery_temp,
+            thermal_zone_count,
+            thermal_max_celsius,
+            thermal_max_zone,
             uptime,
             interval
         );
