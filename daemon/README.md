@@ -1,4 +1,4 @@
-# HanniBomb Rust daemon (v1.5.0)
+# HanniBomb Rust daemon (v1.5.1)
 
 The source is dependency-free and read-only. It publishes health telemetry to `/data/adb/hannibomb/rust_daemon.status`; it does not write CPU/GPU/kernel controls. The existing validated shell watcher remains responsible for adaptive/game profile decisions.
 

@@ -64,7 +64,7 @@ button:active{transform:none!important}
 </head>
 <body>
 <header class="hb-header">
-  <div class="hb-brand"><img class="hb-avatar" src="mascot.jpg" alt="Maskot HanniBomb"><div><div class="hb-brand-name">HanniBomb</div><div class="hb-brand-sub">CONTROL CENTER · v1.5.0</div></div></div>
+  <div class="hb-brand"><img class="hb-avatar" src="mascot.jpg" alt="Maskot HanniBomb"><div><div class="hb-brand-name">HanniBomb</div><div class="hb-brand-sub">CONTROL CENTER · v1.5.1</div></div></div>
   <span class="pill"><i class="dot" id="headerBridgeDot"></i><span id="headerBridgeLabel">WebUI</span></span>
 </header>
 <div class="hb-pages" id="hbPages" aria-label="Panel HanniBomb">
@@ -73,7 +73,7 @@ button:active{transform:none!important}
     <div class="brand">HanniBomb · Control Center</div>
     <h1>HanniBomb</h1>
     <p class="sub">Panel kontrol yang terhubung ke modul. Setiap aksi melewati pemeriksaan dukungan, mencatat hasil, dan menghindari klaim sukses jika perangkat menolak perubahan.</p>
-    <div class="meta"><span class="pill"><i class="dot" id="bridgeDot"></i><span id="bridgeLabel">Memeriksa KernelSU WebUI…</span></span><span class="pill" id="versionPill">v1.5.0</span><span class="pill" id="devicePill">Perangkat: membaca…</span><span class="pill" id="runtimePill">Runtime: memeriksa…</span></div>
+    <div class="meta"><span class="pill"><i class="dot" id="bridgeDot"></i><span id="bridgeLabel">Memeriksa KernelSU WebUI…</span></span><span class="pill" id="versionPill">v1.5.1</span><span class="pill" id="devicePill">Perangkat: membaca…</span><span class="pill" id="runtimePill">Runtime: memeriksa…</span></div>
     <div class="metrics">
       <div class="metric"><strong id="profileValue">—</strong><small>Profil terpilih</small></div>
       <div class="metric"><strong id="batteryValue">—</strong><small>Baterai</small></div>
@@ -182,7 +182,7 @@ button:active{transform:none!important}
       </details>
     </div>
   <div class="card wide"><div id="actionStatus" class="notice">WebUI belum menjalankan aksi apa pun.</div><pre class="mono" id="output">Menunggu koneksi KernelSU WebUI…</pre></div></section>
-  <p class="foot">HanniBomb v1.5.0 · Hannhanniii. CPU governor, Wi-Fi scan throttle, TCP preset, DSCP, traffic shaping, dan game auto-profile memiliki kontrol terpisah. Fitur yang tidak didukung harus ditolak atau dilewati. Tes otomatis source tidak menggantikan uji langsung di perangkat.</p>
+  <p class="foot">HanniBomb v1.5.1 · Hannhanniii. CPU governor, Wi-Fi scan throttle, TCP preset, DSCP, traffic shaping, dan game auto-profile memiliki kontrol terpisah. Fitur yang tidak didukung harus ditolak atau dilewati. Tes otomatis source tidak menggantikan uji langsung di perangkat.</p>
 </main></section>
 </div>
 <nav class="glass-dock hb-dock" aria-label="Navigasi HanniBomb">
@@ -271,7 +271,7 @@ async function refreshStatus(){
     const res=normalizeResult(await bridgeExec(moduleCommand(['status'])));
     if(res.code!==0||!res.stdout.includes('VERSION=')){throw new Error(res.stderr||res.stdout||'Gagal membaca status modul.');}
     state=parseKv(res.stdout);setDot(true);
-    $('versionPill').textContent='v'+value('VERSION','1.5.0');$('devicePill').textContent='Perangkat: '+value('MODEL','unknown');const rs=value('RUST_DAEMON_STATE','unknown'),rk=value('RUST_DAEMON_KIND','unknown');$('runtimePill').textContent='Runtime: '+(rs==='running'?'Rust aktif':rs==='rust_binary_not_built'?'Shell fallback':rs==='disabled_by_config'?'Rust nonaktif':rs);$('runtimePill').title='Runtime '+rk+' / '+rs;
+    $('versionPill').textContent='v'+value('VERSION','1.5.1');$('devicePill').textContent='Perangkat: '+value('MODEL','unknown');const rs=value('RUST_DAEMON_STATE','unknown'),rk=value('RUST_DAEMON_KIND','unknown');$('runtimePill').textContent='Runtime: '+(rs==='running'?'Rust aktif':rs==='rust_binary_not_built'?'Shell fallback':rs==='disabled_by_config'?'Rust nonaktif':rs);$('runtimePill').title='Runtime '+rk+' / '+rs;
     $('profileValue').textContent=prettyProfile(value('SELECTED_PROFILE'));$('modeValue').textContent=value('MODE')==='hybrid'?'Hybrid Otomatis':'Manual';
     $('reasonValue').textContent=value('AI_REASON');$('thermalValue').textContent=value('THERMAL_STATUS');$('kernelValue').textContent=value('KERNEL');
     $('modelValue').textContent=value('MODEL');$('androidValue').textContent=value('ANDROID')+' / API '+value('API');$('boardValue').textContent=value('BOARD');$('saverValue').textContent=value('LOW_POWER');
@@ -332,7 +332,7 @@ $('clearAppSelectionBtn').addEventListener('click',()=>{selectedPackages.clear()
 async function saveSelectedGames(){const pkgs=Array.from(selectedPackages).sort().join(',');if(!pkgs){toast('Pilih minimal satu aplikasi terlebih dahulu.');return false;}const r=await run(['game-packages',pkgs],{toast:'Pilihan game disimpan.'});if(r&&r.code===0){state.GAME_PACKAGES=pkgs;$('gamePackagesValue').textContent=pkgs.split(',').length+' aplikasi dipilih';return true;}return false;}
 $('saveGamesBtn').addEventListener('click',saveSelectedGames);
 $('commitAppsBtn').addEventListener('click',async()=>{if(await saveSelectedGames())$('appPicker').hidden=true;});
-$('gameAutoBtn').addEventListener('click',async()=>{if(!selectedPackages.size)selectedFromState();if(!selectedPackages.size){toast('Tekan Tambahkan game dan pilih aplikasi dahulu.');return;}if(!ask('Aktifkan deteksi foreground sekitar setiap 60 detik? Mode Performance sementara tetap tunduk pada batas baterai/suhu.'))return;const saved=await saveSelectedGames();if(saved)run(['game-auto','1'],{toast:'Deteksi game otomatis aktif.'});});
+$('gameAutoBtn').addEventListener('click',async()=>{if(!selectedPackages.size)selectedFromState();if(!selectedPackages.size){toast('Tekan Tambahkan game dan pilih aplikasi dahulu.');return;}if(!ask('Aktifkan deteksi foreground sekitar setiap 5 detik? Penggunaan dumpsys lebih sering dapat menambah sedikit beban; batas baterai/suhu tetap berlaku.'))return;const saved=await saveSelectedGames();if(saved)run(['game-auto','1'],{toast:'Deteksi game otomatis aktif.'});});
 $('gameStopBtn').addEventListener('click',()=>run(['game-auto','0'],{toast:'Deteksi game otomatis dimatikan.'}));
 document.querySelectorAll('[data-network]').forEach(b=>b.addEventListener('click',()=>{if(!ask('Terapkan preset TCP '+b.dataset.network+'? Fitur ini menulis hanya node yang diizinkan dan didukung kernel.'))return;run(['network-preset',b.dataset.network],{toast:'Preset TCP '+b.dataset.network+' diproses.'});}));
 $('applyCustomTcpBtn').addEventListener('click',()=>{const cc=$('tcpCc').value.trim()||'auto',buf=$('tcpBuffer').value;if(!/^[A-Za-z0-9_.-]+$/.test(cc)||!/^[0-9]+$/.test(buf)){toast('Algoritma/buffer tidak valid.');return;}if(!ask('Terapkan TCP Custom? Algoritma yang tidak tersedia akan dilewati.'))return;run(['network-custom',cc,buf],{toast:'Preset TCP Custom diproses.'});});

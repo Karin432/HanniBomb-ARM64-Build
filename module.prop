@@ -1,6 +1,6 @@
 id=hannibomb
 name=HanniBomb
-version=1.5.0
-versionCode=150
+version=1.5.1
+versionCode=151
 author=Hannhanniii
-description=Hybrid runtime groundwork, Rust telemetry daemon source, improved lifecycle diagnostics, game profiles and lighter WebUI.
+description=Stellar-inspired safe profile monitoring, faster game detection, read-only telemetry and validated lifecycle diagnostics.

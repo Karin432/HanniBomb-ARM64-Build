@@ -1,3 +1,10 @@
+# HanniBomb v1.5.1 — Stellar-inspired safe integration
+
+- Faster foreground game/profile detection (5-second interval).
+- WebUI confirmation and status text synchronized with watcher behavior.
+- Keeps device-specific kernel writes opt-in; no blind CPU/GPU/thermal writes added.
+- Rust daemon remains telemetry-only; build/install status must be verified separately.
+
 # HanniBomb v1.5.0
 
 - Preserved the existing purple-black WebUI and v1.4.4 low-compositing performance pass.

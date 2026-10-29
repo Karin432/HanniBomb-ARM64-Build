@@ -5,7 +5,7 @@ export MODDIR HANNIBOMB_MODDIR="$MODDIR"
 DATA_DIR=${HANNIBOMB_DATA_DIR:-/data/adb/hannibomb}
 . "$MODDIR/common.sh"
 echo $$ > "$DATA_DIR/watcher.pid"
-log "watcher started (60-second interval; no CPU/GPU frequency polling)"
+log "watcher started (5-second game/profile check; no CPU/GPU frequency polling)"
 
 foreground_package() {
   if [ "${HANNIBOMB_TEST_MODE:-0}" = 1 ]; then
@@ -74,7 +74,7 @@ while :; do
   fi
   # A one-iteration switch exists only for deterministic source-level simulation tests.
   [ "${HANNIBOMB_TEST_ONCE:-0}" = 1 ] && break
-  sleep 60
+  sleep 5
 done
 rm -f "$DATA_DIR/watcher.pid"
 log "watcher stopped"

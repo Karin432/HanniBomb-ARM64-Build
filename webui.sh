@@ -60,7 +60,7 @@ print_status() {
     esac
   fi
   active_state=$(cat "$ACTIVE_STATE" 2>/dev/null)
-  echo "VERSION=1.5.0"
+  echo "VERSION=1.5.1"
   echo "RUST_DAEMON_STATE=$(sed -n 's/^state=//p' "$DATA_DIR/rust_daemon.status" 2>/dev/null | head -n 1)"
   echo "RUST_DAEMON_KIND=$(sed -n 's/^daemon=//p' "$DATA_DIR/rust_daemon.status" 2>/dev/null | head -n 1)"
   echo "RUST_DAEMON_PID=$(sed -n 's/^pid=//p' "$DATA_DIR/rust_daemon.status" 2>/dev/null | head -n 1)"
@@ -207,13 +207,13 @@ case "${1:-status}" in
         done ;;
   game-packages)
     set_config GAME_PACKAGES "${2:-}" || { err "enter package IDs separated by commas, no spaces"; exit 2; }
-    echo "Saved game package list. Detection checks the foreground package about once per minute." ;;
+    echo "Saved game package list. Foreground detection checks about every 5 seconds while the module is active." ;;
   game-auto)
     case "${2:-}" in 0|1) ;; *) err "game-auto expects 0 or 1"; exit 2 ;; esac
     load_config
     if [ "$2" = 1 ] && [ -z "$GAME_PACKAGES" ]; then err "save one or more game package IDs first"; exit 2; fi
     set_config ENABLE_GAME_AUTO_PROFILE "$2" || exit 2
-    if [ "$2" = 0 ]; then restore_game_override; else echo "Game auto-profile enabled; thermal/battery profile safety is checked before override."; fi ;;
+    if [ "$2" = 0 ]; then restore_game_override; else echo "Game auto-profile enabled; the watcher checks about every 5 seconds and still checks battery/thermal safety."; fi ;;
   dscp)
     case "${2:-}" in apply) ;; restore) restore_dscp_profile; exit $? ;; *) err "dscp expects apply or restore"; exit 2 ;; esac
     port=${3:-27015}; value=${4:-46}; proto=${5:-udp}

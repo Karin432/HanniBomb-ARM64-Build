@@ -1,44 +1,176 @@
-//! HanniBomb telemetry sidecar for Android ARM64.
-//! Read-only by design: it reports health and device telemetry; profile writes stay in the
-//! existing validated shell adapters until a device-specific Rust adapter is tested.
-use std::{env, fs, path::Path, process::Command, thread, time::Duration};
+//! HanniBomb v1.5.1 Rust telemetry daemon.
+//! Read-only: never writes CPU, GPU, thermal, kernel, or touchscreen controls.
+
+use std::{
+    env, fs,
+    io::Write,
+    path::{Path, PathBuf},
+    process::Command,
+    thread,
+    time::Duration,
+};
+
+const LOG_LIMIT: u64 = 256 * 1024;
+const DEFAULT_INTERVAL: u64 = 15;
 
 fn command(program: &str, args: &[&str]) -> String {
-    Command::new(program).args(args).output().ok()
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string()).unwrap_or_default()
+    Command::new(program)
+        .args(args)
+        .output()
+        .ok()
+        .filter(|o| o.status.success())
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+        .unwrap_or_else(|| "unknown".to_string())
 }
-fn prop(key: &str) -> String { command("/system/bin/getprop", &[key]) }
-fn write_status(path: &Path, text: &str) {
-    let tmp = path.with_extension("tmp");
-    if fs::write(&tmp, text).is_ok() { let _ = fs::rename(tmp, path); }
+
+fn prop(key: &str) -> String {
+    command("/system/bin/getprop", &[key])
+        .replace(['\n', '\r'], " ")
 }
-fn main() {
-    let moddir = env::var("HANNIBOMB_MODDIR").unwrap_or_else(|_| "/data/adb/modules/hannibomb".into());
-    let data = env::var("HANNIBOMB_DATA_DIR").unwrap_or_else(|_| "/data/adb/hannibomb".into());
-    let module = Path::new(&moddir); let data_path = Path::new(&data);
-    let _ = fs::create_dir_all(data_path);
-    let pid_path = data_path.join("rust_daemon.pid");
-    let status_path = data_path.join("rust_daemon.status");
-    let _ = fs::write(&pid_path, std::process::id().to_string());
-    let log_path = data_path.join("rust_daemon.log");
-    let mut last_log = String::new();
-    loop {
-        if !module.exists() || module.join("disable").exists() || data_path.join("stop_rust_daemon").exists() { break; }
-        let uptime = fs::read_to_string("/proc/uptime").unwrap_or_default();
-        let mem = fs::read_to_string("/proc/meminfo").unwrap_or_default();
-        let mem_available = mem.lines().find(|l| l.starts_with("MemAvailable:")).unwrap_or("MemAvailable: unknown");
-        let battery = command("/system/bin/dumpsys", &["battery"]);
-        let level = battery.lines().find(|l| l.trim_start().starts_with("level:")).unwrap_or("level: unknown").trim().to_string();
-        let temp = battery.lines().find(|l| l.trim_start().starts_with("temperature:")).unwrap_or("temperature: unknown").trim().to_string();
-        let status = format!("daemon=rust\nstate=running\npid={}\nandroid={}\nmodel={}\nmem_available={}\nbattery_{}\nbattery_{}\nuptime={}\n", std::process::id(), prop("ro.build.version.release"), prop("ro.product.model"), mem_available.trim(), level, temp, uptime.trim());
-        write_status(&status_path, &status);
-        if last_log.is_empty() {
-            let line = format!("[HanniBomb Rust] started pid={} android={} model={} {} {}", std::process::id(), prop("ro.build.version.release"), prop("ro.product.model"), level, temp);
-            let _ = fs::OpenOptions::new().create(true).append(true).open(&log_path).and_then(|mut f| std::io::Write::write_all(&mut f, format!("{}\n", line).as_bytes()));
-            last_log = "started".to_string();
+
+fn write_status(path: &Path, content: &str) -> std::io::Result<()> {
+    let tmp = path.with_extension("status.tmp");
+    fs::write(&tmp, content)?;
+    fs::rename(tmp, path)
+}
+
+fn append_log(path: &Path, line: &str) {
+    if fs::metadata(path).map(|m| m.len() >= LOG_LIMIT).unwrap_or(false) {
+        let old = path.with_extension("log.old");
+        let _ = fs::remove_file(&old);
+        if fs::rename(path, old).is_err() {
+            let _ = fs::remove_file(path);
         }
-        thread::sleep(Duration::from_secs(15));
     }
-    let _ = fs::remove_file(&pid_path); let _ = fs::remove_file(&status_path);
-    let _ = fs::remove_file(data_path.join("stop_rust_daemon"));
+
+    if let Ok(mut file) = fs::OpenOptions::new().create(true).append(true).open(path) {
+        let _ = writeln!(file, "{}", line.replace(['\n', '\r'], " "));
+    }
+}
+
+fn battery_info() -> (String, String) {
+    let output = command("/system/bin/dumpsys", &["battery"]);
+    let mut level = "unknown".to_string();
+    let mut temp = "unknown".to_string();
+
+    for line in output.lines() {
+        let line = line.trim();
+        if line.starts_with("level:") {
+            level = line["level:".len()..].trim().to_string();
+        } else if line.starts_with("temperature:") {
+            temp = line["temperature:".len()..].trim().to_string();
+        }
+    }
+
+    (level, temp)
+}
+
+fn should_stop(module: &Path, data: &Path) -> bool {
+    !module.exists()
+        || module.join("disable").exists()
+        || data.join("stop_rust_daemon").exists()
+}
+
+fn cleanup(pid: &Path, status: &Path) {
+    let current_pid = std::process::id().to_string();
+
+    // Remove only files that still identify this daemon instance.
+    if fs::read_to_string(pid)
+        .map(|value| value.trim() == current_pid)
+        .unwrap_or(false)
+    {
+        let _ = fs::remove_file(pid);
+    }
+
+    let expected = format!("pid={}", current_pid);
+    if fs::read_to_string(status)
+        .map(|content| content.lines().any(|line| line == expected))
+        .unwrap_or(false)
+    {
+        let _ = fs::remove_file(status);
+    }
+}
+
+fn main() {
+    let moddir = env::var("HANNIBOMB_MODDIR")
+        .unwrap_or_else(|_| "/data/adb/modules/hannibomb".to_string());
+    let datadir = env::var("HANNIBOMB_DATA_DIR")
+        .unwrap_or_else(|_| "/data/adb/hannibomb".to_string());
+
+    let module = PathBuf::from(moddir);
+    let data = PathBuf::from(datadir);
+
+    let interval = env::var("HANNIBOMB_POLL_SECONDS")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .unwrap_or(DEFAULT_INTERVAL)
+        .clamp(5, 300);
+
+    if fs::create_dir_all(&data).is_err() {
+        eprintln!("HanniBomb Rust: cannot create data directory");
+        return;
+    }
+
+    let pid_path = data.join("rust_daemon.pid");
+    let status_path = data.join("rust_daemon.status");
+    let log_path = data.join("rust_daemon.log");
+
+    if fs::write(&pid_path, std::process::id().to_string()).is_err() {
+        eprintln!("HanniBomb Rust: cannot write PID file");
+        return;
+    }
+
+    append_log(
+        &log_path,
+        &format!(
+            "[HanniBomb Rust] started pid={} interval={}s",
+            std::process::id(),
+            interval
+        ),
+    );
+
+    loop {
+        if should_stop(&module, &data) {
+            break;
+        }
+
+        let uptime = fs::read_to_string("/proc/uptime")
+            .unwrap_or_else(|_| "unknown".to_string())
+            .split_whitespace()
+            .next()
+            .unwrap_or("unknown")
+            .to_string();
+
+        let mem_available = fs::read_to_string("/proc/meminfo")
+            .ok()
+            .and_then(|contents| {
+                contents.lines()
+                    .find(|line| line.starts_with("MemAvailable:"))
+                    .map(|line| line.trim().to_string())
+            })
+            .unwrap_or_else(|| "unknown".to_string());
+
+        let (battery_level, battery_temp) = battery_info();
+
+        let status = format!(
+            "daemon=rust\nstate=running\npid={}\nandroid={}\nmodel={}\nmem_available={}\nbattery_level={}\nbattery_temperature={}\nuptime_seconds={}\npoll_seconds={}\n",
+            std::process::id(),
+            prop("ro.build.version.release"),
+            prop("ro.product.model"),
+            mem_available,
+            battery_level,
+            battery_temp,
+            uptime,
+            interval
+        );
+
+        if let Err(error) = write_status(&status_path, &status) {
+            append_log(&log_path, &format!("[HanniBomb Rust] status write failed: {}", error));
+        }
+
+        thread::sleep(Duration::from_secs(interval));
+    }
+
+    append_log(&log_path, "[HanniBomb Rust] stopped");
+    cleanup(&pid_path, &status_path);
 }

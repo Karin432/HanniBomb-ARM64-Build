@@ -91,7 +91,7 @@ jobs:
           set -euo pipefail
 
           STAGE="$RUNNER_TEMP/hannibomb-module"
-          ZIP="$GITHUB_WORKSPACE/HanniBomb_v1.5.0_KSU_Install.zip"
+          ZIP="$GITHUB_WORKSPACE/HanniBomb_v1.5.1_KSU_Install.zip"
 
           mkdir -p "$STAGE/bin" "$STAGE/webroot"
 
@@ -131,7 +131,7 @@ jobs:
       - name: Upload installable KernelSU ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: HanniBomb-v1.5.0-KSU-Install
-          path: HanniBomb_v1.5.0_KSU_Install.zip
+          name: HanniBomb-v1.5.1-KSU-Install
+          path: HanniBomb_v1.5.1_KSU_Install.zip
           if-no-files-found: error
           retention-days: 14
