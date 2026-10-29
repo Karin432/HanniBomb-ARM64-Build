@@ -91,9 +91,9 @@ jobs:
           set -euo pipefail
 
           STAGE="$RUNNER_TEMP/hannibomb-module"
-          ZIP="$GITHUB_WORKSPACE/HanniBomb_v1.5.1_KSU_Install.zip"
+          ZIP="$GITHUB_WORKSPACE/HanniBomb_v1.5.2_KSU_Install.zip"
 
-          mkdir -p "$STAGE/bin" "$STAGE/webroot"
+          mkdir -p "$STAGE/bin" "$STAGE/webroot" "$STAGE/companion"
 
           cp module.prop service.sh watcher.sh common.sh \
              customize.sh action.sh uninstall.sh webui.sh config.conf \
@@ -101,6 +101,8 @@ jobs:
 
           cp -a webroot/. "$STAGE/webroot/"
           install -m 0755 bin/hannibombd "$STAGE/bin/hannibombd"
+          test -s companion/HanniBomb.apk
+          install -m 0644 companion/HanniBomb.apk "$STAGE/companion/HanniBomb.apk"
 
           cd "$STAGE"
           zip -qr "$ZIP" .
@@ -115,6 +117,7 @@ jobs:
           grep -Fxq 'bin/hannibombd' "$RUNNER_TEMP/zip-list.txt"
           grep -Fxq 'webroot/index.html' "$RUNNER_TEMP/zip-list.txt"
           grep -Fxq 'module.prop' "$RUNNER_TEMP/zip-list.txt"
+          grep -Fxq 'companion/HanniBomb.apk' "$RUNNER_TEMP/zip-list.txt"
 
           echo "===== ZIP CONTENTS ====="
           cat "$RUNNER_TEMP/zip-list.txt"
@@ -131,7 +134,7 @@ jobs:
       - name: Upload installable KernelSU ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: HanniBomb-v1.5.1-KSU-Install
-          path: HanniBomb_v1.5.1_KSU_Install.zip
+          name: HanniBomb-v1.5.2-KSU-Install
+          path: HanniBomb_v1.5.2_KSU_Install.zip
           if-no-files-found: error
           retention-days: 14
