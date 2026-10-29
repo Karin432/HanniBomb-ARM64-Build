@@ -107,6 +107,7 @@ fn thermal_info() -> (usize, String, String) {
             max_celsius = Some(celsius);
             max_zone = fs::read_to_string(path.join("type"))
                 .map(|value| value.trim().replace(['\n', '\r'], " "))
+                .ok()
                 .filter(|value| !value.is_empty())
                 .unwrap_or(name);
         }
