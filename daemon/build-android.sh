@@ -1,6 +1,6 @@
 
 #!/usr/bin/env sh
-# HanniBomb v1.5.1 - Android ARM64 build
+# HanniBomb v1stabil - Android ARM64 build
 set -eu
 
 TARGET="aarch64-linux-android"

@@ -1,4 +1,4 @@
-//! HanniBomb v1.5.1 Rust telemetry daemon.
+//! HanniBomb v1stabil Rust telemetry daemon.
 //! Read-only: never writes CPU, GPU, thermal, kernel, or touchscreen controls.
 
 use std::{

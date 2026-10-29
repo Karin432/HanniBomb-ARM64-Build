@@ -60,7 +60,7 @@ print_status() {
     esac
   fi
   active_state=$(cat "$ACTIVE_STATE" 2>/dev/null)
-  echo "VERSION=1.5.1"
+  echo "VERSION=1stabil"
   echo "RUST_DAEMON_STATE=$(sed -n 's/^state=//p' "$DATA_DIR/rust_daemon.status" 2>/dev/null | head -n 1)"
   echo "RUST_DAEMON_KIND=$(sed -n 's/^daemon=//p' "$DATA_DIR/rust_daemon.status" 2>/dev/null | head -n 1)"
   echo "RUST_DAEMON_PID=$(sed -n 's/^pid=//p' "$DATA_DIR/rust_daemon.status" 2>/dev/null | head -n 1)"

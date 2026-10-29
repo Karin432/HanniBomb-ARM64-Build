@@ -119,7 +119,7 @@ toggle_governor_control() {
 while :; do
   echo
   echo "╔════════════════════════════════╗"
-  echo "║       HanniBomb v1.5.1         ║"
+  echo "║       HanniBomb v1stabil         ║"
   echo "║        by Hannhanniii          ║"
   echo "╚════════════════════════════════╝"
   echo "1) Status + AI recommendation"
